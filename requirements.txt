@@ -1,0 +1,4 @@
+moviepy>=0.2.2.11
+Pillow>=2.7.0
+scipy>=0.15.1
+numpy>=1.9.1
