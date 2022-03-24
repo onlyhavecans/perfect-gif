@@ -1,6 +1,6 @@
 import os
 import argparse
-import moviepy.editor as mp
+from moviepy.editor import VideoFileClip
 from moviepy.video.tools.cuts import FramesMatches
 
 
@@ -21,16 +21,12 @@ def process_vid(video, out_directory):
     out_directory must exist!
     """
     try:
-        clip = mp.VideoFileClip(video)
-        scenes = FramesMatches.from_clip(clip.resize(width=120), 10, 3)
+        clip = VideoFileClip(video).resize(width=120)
+        scenes = FramesMatches.from_clip(clip, dist_thr=10, max_d=4)
     except Exception:
         print("oops, Looks like {} isn't a vid".format(video))
         return
-    # Cinderalla
-    # match_thr=2, min_time_span=0.5, nomatch_thr=4, time_distance=0.5
-    # Ex
-    # match_thr=1, min_time_span=1.5, nomatch_thr=2, time_distance=0.5)
-    selected_scenes = scenes.select_scenes(2, 1, 4, 0.5)
+    selected_scenes = scenes.select_scenes(match_thr=2, min_time_span=1, nomatch_thr=4, time_distance=0.5)
     selected_scenes.write_gifs(clip.resize(width=450), out_directory)
 
 
