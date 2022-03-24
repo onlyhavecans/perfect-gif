@@ -21,8 +21,8 @@ def process_vid(video, out_directory):
     out_directory must exist!
     """
     try:
-        clip = VideoFileClip(video).resize(width=120)
-        scenes = FramesMatches.from_clip(clip, dist_thr=10, max_d=4)
+        clip = VideoFileClip(video)
+        scenes = FramesMatches.from_clip(clip.resize(width=120), dist_thr=10, max_d=4)
     except Exception:
         print("oops, Looks like {} isn't a vid".format(video))
         return
