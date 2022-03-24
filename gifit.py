@@ -1,5 +1,7 @@
 import os
 import argparse
+from os.path import exists
+
 from moviepy.editor import VideoFileClip
 from moviepy.video.tools.cuts import FramesMatches
 
@@ -20,12 +22,23 @@ def process_vid(video, out_directory):
     If video is not valid we will print error and pass
     out_directory must exist!
     """
+
     try:
         clip = VideoFileClip(video)
-        scenes = FramesMatches.from_clip(clip.resize(width=120), dist_thr=10, max_d=4)
     except Exception as e:
-        print(f"couldn't get matches from {video}: {e}")
+        print(f"Unable to open clip{video}: {e}")
         return
+
+    save_file = f"{video}.framematches.txt"
+    if exists(save_file):
+        scenes = FramesMatches.load(save_file)
+    else:
+        scenes = FramesMatches.from_clip(clip.resize(width=120), dist_thr=10, max_d=4)
+        try:
+            scenes.save(save_file)
+        except Exception as e:
+            print(f"Unable to save matches: {e}")
+
     selected_scenes = scenes.select_scenes(match_thr=2, min_time_span=1, nomatch_thr=4, time_distance=0.5)
     selected_scenes.write_gifs(clip.resize(width=450), out_directory)
 
