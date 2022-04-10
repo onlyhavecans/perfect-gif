@@ -61,7 +61,11 @@ def optimize_gif(path, file):
         "+delete",
         os.path.join(path, f"{base_name}.optimized.gif")
     ]
-    subprocess_call(cmd)
+    try:
+        subprocess_call(cmd)
+        os.remove(os.path.join(path, file))
+    except:
+        pass
 
 
 def optimize_dir(path):
