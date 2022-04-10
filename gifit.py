@@ -52,11 +52,11 @@ def optimize_gif(path, file):
         image_magick,
         "convert",
         os.path.join(path, file),
-        "-coalesce",
+        "-layers",
+        "coalesce",
         "-layers",
         "remove-dups",
-        "-layers",
-        "optimize-transparency",
+        "+delete",
         os.path.join(path, f"{base_name}.optimized.gif")
     ]
     subprocess_call(cmd)
