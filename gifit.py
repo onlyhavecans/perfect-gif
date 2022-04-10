@@ -54,6 +54,8 @@ def optimize_gif(path, file):
         os.path.join(path, file),
         "-layers",
         "coalesce",
+        "-fuzz",
+        "25%",
         "-layers",
         "remove-dups",
         "+delete",
