@@ -3,7 +3,7 @@ import argparse
 from os.path import exists
 
 from moviepy.editor import VideoFileClip
-from moviepy.tools import cvsecs
+from moviepy.tools import cvsecs, subprocess_call
 from moviepy.video.tools.cuts import FramesMatches
 
 
@@ -43,6 +43,38 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def optimize_gif(path, file):
+    image_magick = os.getenv("MAGICK_PATH")
+
+    base_name = os.path.splitext(os.path.basename(file))[0]
+
+    cmd = [
+        image_magick,
+        "convert",
+        os.path.join(path, file),
+        "-coalesce",
+        "-layers",
+        "remove-dups",
+        "-layers",
+        "optimize-transparency",
+        os.path.join(path, f"{base_name}.optimized.gif")
+    ]
+    subprocess_call(cmd)
+
+
+def optimize_dir(path):
+    image_magick = os.getenv("MAGICK_PATH")
+    if image_magick is None:
+        return
+
+    files = os.listdir(path)
+    for gif in files:
+        if gif.endswith("optimized.gif"):
+            continue
+        if gif.endswith(".gif"):
+            optimize_gif(path, gif)
+
+
 def process_vid(video, args):
     """
     If video is not valid we will print error and pass
@@ -73,6 +105,7 @@ def process_vid(video, args):
     selected_scenes = scenes.select_scenes(match_thr=args.match_thr, min_time_span=args.min_time_span,
                                            nomatch_thr=args.nomatch_thr, time_distance=args.time_distance)
     selected_scenes.write_gifs(clip.resize(width=450), out_directory)
+    optimize_dir(out_directory)
 
 
 def get_save_file(outdir, video, args):
