@@ -63,7 +63,6 @@ def optimize_gif(path, file):
     ]
     try:
         subprocess_call(cmd)
-        os.remove(os.path.join(path, file))
     except:
         pass
 
